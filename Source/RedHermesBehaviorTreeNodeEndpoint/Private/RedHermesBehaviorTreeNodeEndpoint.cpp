@@ -10,6 +10,7 @@
 #include "RedHermesGraphNodeEndpointEditorExtension.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "EdGraph/EdGraph.h"
+#include "Modules/ModuleManager.h"
 #include "Toolkits/ToolkitManager.h"
 #endif
 
