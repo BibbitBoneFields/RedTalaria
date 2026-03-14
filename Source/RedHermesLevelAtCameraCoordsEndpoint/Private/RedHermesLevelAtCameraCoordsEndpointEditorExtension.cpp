@@ -37,8 +37,12 @@ void URedHermesLevelAtCameraCoordsEndpointEditorExtension::RegisterViewportOptio
 	if (UToolMenu* Menu = UToolMenus::Get()->ExtendMenu(ViewportMenuName))
 	{
 		static auto GetPerspectiveLevelEditorViewportClient = [](const FToolMenuContext& MenuContext) -> FLevelEditorViewportClient* {
-			ULevelViewportToolBarContext* Context = MenuContext.FindContext<ULevelViewportToolBarContext>();
-			if (Context && Context->LevelViewportToolBarWidget.IsValid())
+#if UE_VERSION_OLDER_THAN(5,7,0)
+			if (ULevelViewportToolBarContext* Context = MenuContext.FindContext<ULevelViewportToolBarContext>();
+				Context && Context->LevelViewportToolBarWidget.IsValid())
+#else
+			if (ULevelViewportContext* Context = MenuContext.FindContext<ULevelViewportContext>())
+#endif
 			{
 				FLevelEditorViewportClient* ViewportClient = Context->GetLevelViewportClient();
 				if (ViewportClient && ViewportClient->ViewportType == LVT_Perspective)
