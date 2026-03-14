@@ -7,6 +7,7 @@
 #include "RedTalaria.h"
 #include "RedTalariaLevelAtCameraCoordsUrls.h"
 #include "ToolMenus.h"
+#include "Misc/EngineVersionComparison.h"
 #include "HAL/PlatformApplicationMisc.h"
 
 #define LOCTEXT_NAMESPACE "Editor.RedHermesLevelAtCameraCoordsEndpointEditorExtension"
@@ -25,7 +26,15 @@ void URedHermesLevelAtCameraCoordsEndpointEditorExtension::RegisterViewportOptio
 {
 	FToolMenuOwnerScoped ToolMenuOwnerScoped(this);
 
-	if (UToolMenu* Menu = UToolMenus::Get()->ExtendMenu("LevelEditor.LevelViewportToolBar.Options"))
+#if UE_VERSION_OLDER_THAN(5,6,0)
+	static const FName ViewportMenuName("LevelEditor.LevelViewportToolBar.Options");
+	static const FName ViewportMenuFirstSection("LevelViewportViewportOptions");
+#else
+	static const FName ViewportMenuName("LevelEditor.LevelViewportToolBar.Camera");
+	static const FName ViewportMenuFirstSection("LevelViewportCameraType_Perspective");
+#endif
+
+	if (UToolMenu* Menu = UToolMenus::Get()->ExtendMenu(ViewportMenuName))
 	{
 		static auto GetPerspectiveLevelEditorViewportClient = [](const FToolMenuContext& MenuContext) -> FLevelEditorViewportClient* {
 			ULevelViewportToolBarContext* Context = MenuContext.FindContext<ULevelViewportToolBarContext>();
@@ -58,8 +67,8 @@ void URedHermesLevelAtCameraCoordsEndpointEditorExtension::RegisterViewportOptio
 
 		FToolMenuSection& Section = Menu->AddSection(
 			TEXT("Hermes"),
-			LOCTEXT("LevelViewportToolBar.Options.Hermes", "Hermes"),
-			FToolMenuInsert(TEXT("LevelViewportViewportOptions"), EToolMenuInsertType::Before));
+			LOCTEXT("LevelViewportToolBar.Section.Hermes", "Hermes"),
+			FToolMenuInsert(ViewportMenuFirstSection, EToolMenuInsertType::Before));
 		Section.AddMenuEntry("CopyURL",
 			LOCTEXT("ViewportAction.CopyCameraCoordsUrl", "Copy camera coords URL"),
 			LOCTEXT("ViewportAction.CopyCameraCoordsUrlTooltip", "Copy an URL that will open this level at the current camera position"),
